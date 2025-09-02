@@ -6,13 +6,20 @@ const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
 
   if (!req.user || !req.user._id) {
-    return res.status(400).send({ message: "Owner information is missing" });
+    return res
+      .status(STATUS.BAD_REQUEST)
+      .send({ message: "Owner information is missing" });
   }
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => res.status(STATUS.CREATED).send({ data: item }))
     .catch((err) => {
       console.error(err);
+      if (err.name === "ValidationError") {
+        return res
+          .status(STATUS.BAD_REQUEST)
+          .send({ message: "Invalid data provide" });
+      }
       res.status(STATUS.INTERNAL_SERVER_ERROR).send({
         message: "An error has occurred on the server",
       });
@@ -31,31 +38,25 @@ const getItems = (req, res) => {
     });
 };
 
-// Update
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } }, { new: true })
-    .orFail()
-    .then((item) => res.status(STATUS.OK).send({ data: item }))
-    .catch((err) => {
-      console.error(err);
-      res.status(STATUS.INTERNAL_SERVER_ERROR).send({
-        message: "An error has occurred on the server",
-      });
-    });
-};
-
 // Delete
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
     .then(() => res.status(STATUS.NO_CONTENT).send({}))
+    .orFail()
     .catch((err) => {
       console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(STATUS.NOT_FOUND).send({ message: "Item not found" });
+      }
+      // Invalid ID format
+      if (err.name === "CastError") {
+        return res
+          .status(STATUS.BAD_REQUEST)
+          .send({ message: "Invalid Item ID" });
+      }
+      // Other server Errors
       res.status(STATUS.INTERNAL_SERVER_ERROR).send({
         message: "An error has occurred on the server",
       });
@@ -69,10 +70,20 @@ const likeItem = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .orFail()
     .then((item) => res.status(STATUS.OK).send({ data: item }))
+    .orFail()
     .catch((err) => {
       console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(STATUS.NOT_FOUND).send({ message: "Item not found" });
+      }
+      // Invalid ID format
+      if (err.name === "CastError") {
+        return res
+          .status(STATUS.BAD_REQUEST)
+          .send({ message: "Invalid Item ID" });
+      }
+      // Other server Errors
       res.status(STATUS.INTERNAL_SERVER_ERROR).send({
         message: "An error has occurred on the server",
       });
@@ -86,10 +97,21 @@ const unlikeItem = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail()
+
     .then((item) => res.status(STATUS.OK).send({ data: item }))
+    .orFail()
     .catch((err) => {
       console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(STATUS.NOT_FOUND).send({ message: "Item not found" });
+      }
+      // Invalid ID format
+      if (err.name === "CastError") {
+        return res
+          .status(STATUS.BAD_REQUEST)
+          .send({ message: "Invalid Item ID" });
+      }
+      // Other server Errors
       res.status(STATUS.INTERNAL_SERVER_ERROR).send({
         message: "An error has occurred on the server",
       });
@@ -99,7 +121,6 @@ const unlikeItem = (req, res) => {
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   unlikeItem,
