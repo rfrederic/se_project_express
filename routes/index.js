@@ -1,13 +1,19 @@
-const router = require("express").Router();
-const clothingItem = require("./clothingItems");
-const usersRouter = require("./users");
-const STATUS = require("../utils/statusCodes");
+const express = require("express");
+const { createUser, login } = require("../controllers/users");
+const auth = require("../middlewares/auth");
+const userRoutes = require("./users");
+const itemRoutes = require("./clothingItems");
 
-router.use("/items", clothingItem);
-router.use("/users", usersRouter);
+const router = express.Router();
 
-router.use((req, res) => {
-  res.status(STATUS.NOT_FOUND).send({ message: "Resource not found" });
-});
+// Public routes
+router.post("/signup", createUser);
+router.post("/signin", login);
+
+// Protected routes (require JWT)
+router.use(auth);
+
+router.use("/users", userRoutes);
+router.use("/items", itemRoutes);
 
 module.exports = router;
