@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const STATUS = require("../utils/statusCodes");
-const { JWT_SECRET = "dev-secret" } = require("../utils/config"); // ✅ only declared once
+const { JWT_SECRET = "dev-secret" } = require("../utils/config");
 
 //  Create new user (signup)
 const createUser = async (req, res, next) => {
@@ -21,7 +21,7 @@ const createUser = async (req, res, next) => {
   } catch (err) {
     if (err.code === STATUS.DUPLICATE_KEY_VIOLATION) {
       return res
-        .status(STATUS.BAD_REQUEST)
+        .status(STATUS.CONFLICT)
         .send({ message: "Email already exists" });
     }
     if (err.name === "ValidationError") {
