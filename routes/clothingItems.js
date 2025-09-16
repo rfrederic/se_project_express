@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const auth = require("../middlewares/auth"); // your auth middleware
+const auth = require("../middlewares/auth");
 
 const {
   createItem,

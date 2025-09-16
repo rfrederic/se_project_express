@@ -5,7 +5,7 @@ const STATUS = require("../utils/statusCodes");
 const { JWT_SECRET = "dev-secret" } = require("../utils/config");
 
 //  Create new user (signup)
-const createUser = async (req, res, next) => {
+const createUser = async (req, res) => {
   try {
     const { name, avatar, email, password } = req.body;
 
@@ -17,7 +17,7 @@ const createUser = async (req, res, next) => {
     const userObj = user.toObject();
     delete userObj.password;
 
-    res.status(STATUS.CREATED).send(userObj);
+    return res.status(STATUS.CREATED).send(userObj);
   } catch (err) {
     if (err.code === STATUS.DUPLICATE_KEY_VIOLATION) {
       return res
@@ -36,7 +36,7 @@ const createUser = async (req, res, next) => {
 };
 
 //  Login user (signin)
-const login = async (req, res, next) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -62,7 +62,7 @@ const login = async (req, res, next) => {
 
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
 
-    res.send({ token });
+    return res.send({ token });
   } catch (err) {
     return res.status(STATUS.INTERNAL_SERVER_ERROR).send({
       message: "An error has occurred on the server",
@@ -71,13 +71,13 @@ const login = async (req, res, next) => {
 };
 
 //  Get current logged-in user
-const getCurrentUser = async (req, res, next) => {
+const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(STATUS.NOT_FOUND).send({ message: "User not found" });
     }
-    res.send(user);
+    return res.send(user);
   } catch (err) {
     return res.status(STATUS.INTERNAL_SERVER_ERROR).send({
       message: "An error has occurred on the server",
@@ -99,7 +99,7 @@ const updateUser = async (req, res) => {
       return res.status(STATUS.NOT_FOUND).send({ message: "User not found" });
     }
 
-    res.send(updatedUser);
+    return res.send(updatedUser);
   } catch (err) {
     if (err.name === "ValidationError") {
       return res
