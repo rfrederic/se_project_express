@@ -29,7 +29,9 @@ const createUser = async (req, res, next) => {
         .status(STATUS.BAD_REQUEST)
         .send({ message: "Invalid user data" });
     }
-    return next(err);
+    return res
+      .status(STATUS.INTERNAL_SERVER_ERROR)
+      .send({ message: "An error has occurred on the server" });
   }
 };
 
@@ -37,6 +39,12 @@ const createUser = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(STATUS.BAD_REQUEST).send({
+        message: "Email and password are required",
+      });
+    }
 
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
@@ -56,7 +64,9 @@ const login = async (req, res, next) => {
 
     res.send({ token });
   } catch (err) {
-    return next(err);
+    return res.status(STATUS.INTERNAL_SERVER_ERROR).send({
+      message: "An error has occurred on the server",
+    });
   }
 };
 
@@ -69,8 +79,37 @@ const getCurrentUser = async (req, res, next) => {
     }
     res.send(user);
   } catch (err) {
-    next(err);
+    return res.status(STATUS.INTERNAL_SERVER_ERROR).send({
+      message: "An error has occurred on the server",
+    });
   }
 };
 
-module.exports = { createUser, login, getCurrentUser };
+const updateUser = async (req, res) => {
+  try {
+    const { name, avatar, email } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { name, avatar, email },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(STATUS.NOT_FOUND).send({ message: "User not found" });
+    }
+
+    res.send(updatedUser);
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      return res
+        .status(STATUS.BAD_REQUEST)
+        .send({ message: "Invalid user data" });
+    }
+    return res.status(STATUS.INTERNAL_SERVER_ERROR).send({
+      message: "An error has occurred on the server",
+    });
+  }
+};
+
+module.exports = { createUser, login, getCurrentUser, updateUser };

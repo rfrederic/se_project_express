@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const auth = require("../middlewares/auth"); // your auth middleware
 
 const {
   createItem,
@@ -10,17 +11,19 @@ const {
 
 // CRUD
 
-// Create
-router.post("/", createItem);
+// Create -> protected
+router.post("/", auth, createItem);
 
-// Read
+// Read all items -> public
 router.get("/", getItems);
 
-// Delete
-router.delete("/:itemId", deleteItem);
+// Delete -> protected
+router.delete("/:itemId", auth, deleteItem);
 
-// Like / Unlike
-router.put("/:itemId/likes", likeItem);
-router.delete("/:itemId/likes", unlikeItem);
+// Like -> protected
+router.put("/:itemId/likes", auth, likeItem);
+
+// Unlike -> protected
+router.delete("/:itemId/likes", auth, unlikeItem);
 
 module.exports = router;

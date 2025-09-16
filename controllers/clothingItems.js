@@ -40,10 +40,21 @@ function getItems(req, res) {
 // Delete
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
+  const userId = req.user._id;
 
-  return ClothingItem.findByIdAndDelete(itemId)
+  return ClothingItem.findById(itemId)
     .orFail()
-    .then((item) => res.status(STATUS.OK).send({ item }))
+    .then((item) => {
+      if (item.owner.toString() !== userId) {
+        return res.status(STATUS.FORBIDDEN).send({
+          message: "You are not allowed to delete this item",
+        });
+      }
+
+      return item.deleteOne().then(() => {
+        res.status(STATUS.OK).send({ message: "Item deleted successfully" });
+      });
+    })
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
@@ -61,7 +72,8 @@ const deleteItem = (req, res) => {
 };
 
 // Like
-const likeItem = (req, res) => ClothingItem.findByIdAndUpdate(
+const likeItem = (req, res) =>
+  ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } },
     { new: true }
@@ -84,7 +96,8 @@ const likeItem = (req, res) => ClothingItem.findByIdAndUpdate(
     });
 
 // Unlike
-const unlikeItem = (req, res) => ClothingItem.findByIdAndUpdate(
+const unlikeItem = (req, res) =>
+  ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
