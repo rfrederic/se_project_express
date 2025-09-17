@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const STATUS = require("../utils/statusCodes");
 
-const auth = (req, res) => {
+const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
@@ -15,9 +15,7 @@ const auth = (req, res) => {
   try {
     const payload = jwt.verify(token, JWT_SECRET);
     req.user = payload;
-    return res.status(STATUS.INTERNAL_SERVER_ERROR).send({
-      message: "An error has occurred on the server",
-    });
+    return next();
   } catch (err) {
     return res.status(STATUS.UNAUTHORIZED).send({ message: "Invalid token" });
   }
