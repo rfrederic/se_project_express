@@ -1,38 +1,41 @@
-# WTWR (What to Wear?) — Back End
+WTWR (What to Wear?) — Back End
 
-This project is the **back-end server** for the WTWR application.  
-It provides an API for managing users and clothing items, with support for authentication and secure data handling.
+This project is the back-end server for the WTWR (What to Wear?) application.
+It provides an API for managing users and clothing items, with authentication and secure data handling.
 
-The server connects to a MongoDB database and implements proper error handling, validation, and RESTful routing.  
-It is designed as part of the full-stack WTWR application, which helps users choose what to wear depending on the weather.
+The server connects to a MongoDB database and implements proper error handling, validation, and RESTful routing.
+It’s part of a full-stack application that helps users decide what to wear depending on the weather.
 
----
+Functionality
 
-## Functionality
+👤 User registration and authentication (JWT-based)
+👕 CRUD operations for clothing items (Create, Read, Delete)
+🔒 Secure password hashing with bcrypt
+⚠️ Error handling with standardized status codes
+✅ Centralized validation using Celebrate/Joi
+🗄️ MongoDB integration via Mongoose
 
-- User registration and authentication
-- CRUD operations for clothing items (create, read, delete)
-- Secure storage of user data (passwords hashed)
-- Error handling with proper status codes
-- Centralized validation using `celebrate` and `Joi`
-- MongoDB database integration via Mongoose
+Technologies Used
 
----
+Node.js & Express — server and routing
+MongoDB & Mongoose — database and ODM
+PM2 — process manager for production
+Celebrate/Joi — validation
+dotenv — environment variable management
+Winston & Morgan — logging
+ESLint — code style consistency
 
-## Technologies Used
+Running the Project
 
-- **Node.js & Express** — server and routing
-- **MongoDB & Mongoose** — database and ODM
-- **Nodemon** — hot reload during development
-- **Celebrate/Joi** — input validation
-- **dotenv** — environment variable management
-- **ESLint** — code linting and style consistency
+npm run start # Launch the server
+npm run dev # Launch the server with hot reload (Nodemon)
+MongoDB must be running locally or accessible remotely.
 
----
+🌐 Deployed Project Links
 
-## Running the Project
+Backend domain: https://api.wearapp.jumpingcrab.com
+Frontend GitHub repo: https://github.com/rfrederic/se_project_react
+Live frontend: https://wearapp.jumpingcrab.com
 
-```bash
-npm run start     # Launch the server
-npm run dev       # Launch the server with hot reload
-```
+🎥 Project Pitch Video
+Check out [![Watch the video](https://img.youtube.com/vi/Zz0fwHh-5wM/0.jpg)](https://www.youtube.com/watch?v=Zz0fwHh-5wM) where I present the project, explain my process, and describe the challenges I overcame while building it.
