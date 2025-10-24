@@ -38,4 +38,4 @@ Frontend GitHub repo: https://github.com/rfrederic/se_project_react
 Live frontend: https://wearapp.jumpingcrab.com
 
 🎥 Project Pitch Video
-Check out [![Watch the video](https://img.youtube.com/vi/Zz0fwHh-5wM/0.jpg)](https://www.youtube.com/watch?v=Zz0fwHh-5wM) where I present the project, explain my process, and describe the challenges I overcame while building it.
+Check out [![Watch the video] (https://youtu.be/YrTK34LsiyQ)] where I present the project, explain my process, and describe the challenges I overcame while building it.
