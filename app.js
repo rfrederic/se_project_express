@@ -7,6 +7,8 @@ const mainRouter = require("./routes");
 const { errors } = require("celebrate");
 const errorHandler = require("./middlewares/errorHandler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const limiter = require("./middlewares/rateLimiter");
+const helmet = require("helmet");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -18,6 +20,10 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
+
+app.use(limiter);
+
+app.use(helmet());
 
 app.use(requestLogger);
 

@@ -2,21 +2,26 @@ const express = require("express");
 const { createUser, login } = require("../controllers/users");
 const userRoutes = require("./users");
 const itemRoutes = require("./clothingItems");
-const STATUS = require("../utils/statusCodes");
+const {
+  validateUserBody,
+  validateLogin,
+} = require("../middlewares/validation");
+
+const NotFoundError = require("../errors/NotFoundError");
 
 const router = express.Router();
 
-// Public routes
-router.post("/signup", createUser);
-router.post("/signin", login);
+// Public routes (with validation)
+router.post("/signup", validateUserBody, createUser);
+router.post("/signin", validateLogin, login);
 
-// Routes (
+// Routes
 router.use("/users", userRoutes);
 router.use("/items", itemRoutes);
 
 // Unknown route
-router.use((req, res) => {
-  res.status(STATUS.NOT_FOUND).send({ message: "Resource not found" });
+router.use((req, res, next) => {
+  next(new NotFoundError("Resource not found"));
 });
 
 module.exports = router;

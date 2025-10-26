@@ -39,6 +39,14 @@ module.exports.validateLogin = celebrate({
 // Validate IDs for users or clothing items
 module.exports.validateId = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().hex().length(24),
+    itemId: Joi.string().hex().length(24),
+  }),
+});
+
+// Validate user update info (PATCH /me)
+module.exports.validateUserUpdate = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    avatar: Joi.string().custom(validateURL),
   }),
 });
