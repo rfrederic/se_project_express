@@ -1,4 +1,3 @@
-const { String } = require("core-js");
 const mongoose = require("mongoose");
 const validator = require("validator");
 
